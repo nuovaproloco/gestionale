@@ -13,12 +13,12 @@ const theme = createTheme({
 });
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <BrowserRouter>
+    <BrowserRouter basename={"gestionale"}>
       <FirebaseDbProvider>
         <MantineProvider theme={theme} defaultColorScheme={"dark"}>
           <Routes>
-            <Route path={"/"} element={<App />}></Route>
             <Route path={"/login"} element={<Login />}></Route>
+            <Route path={""} element={<App />}></Route>
           </Routes>
         </MantineProvider>
       </FirebaseDbProvider>

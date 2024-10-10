@@ -9,16 +9,21 @@ import { v4 as uuidv4 } from "uuid";
 import { FireStoreDb } from "../const/firebaseapp.ts";
 import {
   collection,
-  getDocs,
-  updateDoc,
   deleteDoc,
   doc,
+  getDocs,
   setDoc,
+  updateDoc,
 } from "firebase/firestore";
 import { Listitem } from "../type/types";
 import { useLocalStorage } from "@mantine/hooks";
 import { useNavigate } from "react-router-dom";
-import { GoogleAuthProvider, signInWithPopup, getAuth } from "firebase/auth";
+import {
+  getAuth,
+  getRedirectResult,
+  GoogleAuthProvider,
+  signInWithPopup,
+} from "firebase/auth";
 
 interface DefaultValue {
   getStorage: (path?: string) => Promise<Listitem[]>;
@@ -47,6 +52,7 @@ const FirebaseDbProvider = ({ children }: Props) => {
   const navigate = useNavigate();
   const auth = getAuth();
   const authProvider = new GoogleAuthProvider();
+  authProvider.setCustomParameters({ prompt: "select_account" });
 
   function signinWithGoogle() {
     return signInWithPopup(auth, authProvider);
@@ -95,6 +101,10 @@ const FirebaseDbProvider = ({ children }: Props) => {
   useEffect(() => {
     if (!isLogged) navigate("login");
   }, [isLogged]);
+
+  useEffect(() => {
+    getRedirectResult(auth).then((e) => console.log(e));
+  }, []);
 
   return (
     <FirebaseContext.Provider

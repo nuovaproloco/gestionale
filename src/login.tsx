@@ -1,4 +1,4 @@
-import { Box, Button, Image, Stack, Text, Title } from "@mantine/core";
+import { Box, Button, Flex, Image, Stack, Text, Title } from "@mantine/core";
 import logo from "./assets/logo_compatto_bianco.svg";
 import { useLocalStorage } from "@mantine/hooks";
 import { useNavigate } from "react-router-dom";
@@ -20,30 +20,33 @@ const Login = () => {
 
   return (
     <>
-      <Stack align={"center"} w={"90%"} m={"30% auto"} h={"100vh"}>
-        <Image w={210} src={logo} />
+      <Stack align={"center"} w={"90%"} m={"0 auto"} h={"100vh"}>
+        <Image mt={"30%"} w={210} src={logo} />
         <Box>
           <Title ta={"center"} order={2}>
             Accedi con Google
           </Title>
-          <Button
-            mt={16}
-            w={"100%"}
-            color={error ? "red" : "blue"}
-            onClick={() => {
-              setError(false);
-              signinWithGoogle()
-                .then((e) => {
-                  if (e.user.uid !== "DKnCJH87brPpcZ1eakCLEtg5qOC2")
-                    return setError(true);
-                  setLogin(e.user.uid);
-                  navigate("/");
-                })
-                .catch(() => setError(true));
-            }}
-          >
-            Accedi
-          </Button>
+          <Flex mt={16} justify={"center"}>
+            <Button
+              w={218}
+              color={error ? "red" : "blue"}
+              onClick={() => {
+                setError(false);
+                signinWithGoogle()
+                  .then((e) => {
+                    if (e.user.uid !== "DKnCJH87brPpcZ1eakCLEtg5qOC2")
+                      return setError(true);
+                    setLogin(e.user.uid);
+                    navigate("/");
+                  })
+                  .catch(() => {
+                    setError(true);
+                  });
+              }}
+            >
+              Accedi
+            </Button>
+          </Flex>
           {error && (
             <Text mt={16} c={"red"}>
               Credenziali errate o account non autorizzato
