@@ -18,12 +18,7 @@ import {
 import { Listitem } from "../type/types";
 import { useLocalStorage } from "@mantine/hooks";
 import { useNavigate } from "react-router-dom";
-import {
-  getAuth,
-  getRedirectResult,
-  GoogleAuthProvider,
-  signInWithPopup,
-} from "firebase/auth";
+import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 
 interface DefaultValue {
   getStorage: (path?: string) => Promise<Listitem[]>;
@@ -48,7 +43,7 @@ interface Props {
 }
 const FirebaseDbProvider = ({ children }: Props) => {
   const [lastUpdate, setLastUpdate] = useState(new Date().toUTCString());
-  const [isLogged] = useLocalStorage({ key: "login", defaultValue: "" });
+  const [isLogged] = useLocalStorage({ key: "login", defaultValue: "stale" });
   const navigate = useNavigate();
   const auth = getAuth();
   const authProvider = new GoogleAuthProvider();
@@ -99,12 +94,8 @@ const FirebaseDbProvider = ({ children }: Props) => {
   }
 
   useEffect(() => {
-    if (!isLogged) navigate("login");
+    if (!isLogged) navigate("login", { replace: false });
   }, [isLogged]);
-
-  useEffect(() => {
-    getRedirectResult(auth).then((e) => console.log(e));
-  }, []);
 
   return (
     <FirebaseContext.Provider

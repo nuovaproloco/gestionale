@@ -15,7 +15,7 @@ const Login = () => {
   const [error, setError] = useState(false);
 
   useEffect(() => {
-    if (login) navigate("/");
+    if (login) navigate("");
   }, [login]);
 
   return (

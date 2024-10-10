@@ -18,7 +18,7 @@ createRoot(document.getElementById("root")!).render(
         <MantineProvider theme={theme} defaultColorScheme={"dark"}>
           <Routes>
             <Route path={"/login"} element={<Login />}></Route>
-            <Route element={<App />}></Route>
+            <Route path={""} element={<App />}></Route>
           </Routes>
         </MantineProvider>
       </FirebaseDbProvider>
