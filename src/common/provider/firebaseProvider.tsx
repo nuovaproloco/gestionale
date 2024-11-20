@@ -1,24 +1,11 @@
-import {
-  createContext,
-  ReactNode,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
-import { v4 as uuidv4 } from "uuid";
-import { FireStoreDb } from "../const/firebaseapp.ts";
-import {
-  collection,
-  deleteDoc,
-  doc,
-  getDocs,
-  setDoc,
-  updateDoc,
-} from "firebase/firestore";
-import { Listitem } from "../type/types";
-import { useLocalStorage } from "@mantine/hooks";
-import { useNavigate } from "react-router-dom";
-import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import {createContext, ReactNode, useContext, useEffect, useState,} from "react";
+import {v4 as uuidv4} from "uuid";
+import {FireStoreDb} from "../const/firebaseapp.ts";
+import {collection, deleteDoc, doc, getDocs, setDoc, updateDoc,} from "firebase/firestore";
+import {Listitem} from "../type/types";
+import {useLocalStorage} from "@mantine/hooks";
+import {useNavigate} from "react-router-dom";
+import {getAuth, GoogleAuthProvider, signInWithPopup, UserCredential} from "firebase/auth";
 
 interface DefaultValue {
   getStorage: (path?: string) => Promise<Listitem[]>;
@@ -27,7 +14,7 @@ interface DefaultValue {
   updateStorageItem: (x: Listitem, path?: string) => void;
   lastUpdate: string;
   dbReady: boolean;
-  signinWithGoogle: () => Promise<any>;
+  signinWithGoogle: () => Promise<UserCredential | void>;
 }
 const FirebaseContext = createContext<DefaultValue>({
   getStorage: () => new Promise((resolve) => resolve([])),
@@ -57,9 +44,10 @@ const FirebaseDbProvider = ({ children }: Props) => {
       return await getDocs(collection(FireStoreDb, path ?? "magazzino")).then(
         (querySnapshot) => {
           setLastUpdate(new Date().toUTCString());
-          return querySnapshot.docs.map((doc) => doc.data() as Listitem);
+          return querySnapshot.docs.map((doc) => doc.data() as Listitem) ?? [];
         },
       );
+    else return []
   }
   async function addItem(item: Listitem, path?: string) {
     const uuid = uuidv4();
@@ -79,7 +67,7 @@ const FirebaseDbProvider = ({ children }: Props) => {
   }
   async function updateItem(item: Listitem, path?: string) {
     if (FireStoreDb) {
-      await updateDoc<Listitem>(
+      await updateDoc<object, object>(
         doc(FireStoreDb, path ?? "magazzino", item.id),
         item,
       ).then(() => setLastUpdate(new Date().toUTCString()));

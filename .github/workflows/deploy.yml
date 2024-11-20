@@ -21,6 +21,13 @@ jobs:
         uses: bahmutov/npm-install@v1
 
       - name: Build project
+        env:
+          VITE_APIKEY: ${{secret.APIKEY}}
+          VITE_AUTHDOMAIN: ${{secret.AUTHDOMAIN}}
+          VITE_PROJECTID: ${{secret.PROJECTID}}
+          VITE_STORAGEBUCKET: ${{secret.STORAGEBUCKET}}
+          VITE_MESSAGINGSENDERID: ${{secret.MESSAGINGSENDERID}}
+          VITE_APPID: ${{secret.APPID}}
         run: npm run build
 
       - name: Upload production-ready build files
