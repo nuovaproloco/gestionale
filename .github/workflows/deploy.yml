@@ -22,12 +22,12 @@ jobs:
 
       - name: Build project
         env:
-          VITE_APIKEY: ${{secret.APIKEY}}
-          VITE_AUTHDOMAIN: ${{secret.AUTHDOMAIN}}
-          VITE_PROJECTID: ${{secret.PROJECTID}}
-          VITE_STORAGEBUCKET: ${{secret.STORAGEBUCKET}}
-          VITE_MESSAGINGSENDERID: ${{secret.MESSAGINGSENDERID}}
-          VITE_APPID: ${{secret.APPID}}
+          VITE_APIKEY: ${{secrets.APIKEY}}
+          VITE_AUTHDOMAIN: ${{secrets.AUTHDOMAIN}}
+          VITE_PROJECTID: ${{secrets.PROJECTID}}
+          VITE_STORAGEBUCKET: ${{secrets.STORAGEBUCKET}}
+          VITE_MESSAGINGSENDERID: ${{secrets.MESSAGINGSENDERID}}
+          VITE_APPID: ${{secrets.APPID}}
         run: npm run build
 
       - name: Upload production-ready build files
