@@ -9,7 +9,13 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
-
+    env:
+      VITE_APIKEY: ${{ secrets.APIKEY }}
+      VITE_AUTHDOMAIN: ${{ secrets.AUTHDOMAIN }}
+      VITE_PROJECTID: ${{ secrets.PROJECTID }}
+      VITE_STORAGEBUCKET: ${{ secrets.STORAGEBUCKET }}
+      VITE_MESSAGINGSENDERID: ${{ secrets.MESSAGINGSENDERID }}
+      VITE_APPID: ${{ secrets.APPID }}
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -21,13 +27,6 @@ jobs:
         uses: bahmutov/npm-install@v1
 
       - name: Build project
-        env:
-          VITE_APIKEY: ${{ secrets.APIKEY }}
-          VITE_AUTHDOMAIN: ${{ secrets.AUTHDOMAIN }}
-          VITE_PROJECTID: ${{ secrets.PROJECTID }}
-          VITE_STORAGEBUCKET: ${{ secrets.STORAGEBUCKET }}
-          VITE_MESSAGINGSENDERID: ${{ secrets.MESSAGINGSENDERID }}
-          VITE_APPID: ${{ secrets.APPID }}
         run: npm run build
 
       - name: Upload production-ready build files
