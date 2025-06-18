@@ -1,11 +1,22 @@
-import { Box, Button, Flex, Image, Stack, Text, Title } from "@mantine/core";
-import logo from "./assets/logo_compatto_bianco.svg";
+import {
+  Box,
+  Button,
+  Flex,
+  Image,
+  Stack,
+  Text,
+  Title,
+  useMantineColorScheme,
+} from "@mantine/core";
+import logoW from "./assets/logo_compatto_bianco.svg";
 import { useLocalStorage } from "@mantine/hooks";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useFirebaseApp } from "./common/provider/firebaseProvider.tsx";
+import logoB from "./assets/logo_compatto_nero.svg";
 
 const Login = () => {
+  const { colorScheme } = useMantineColorScheme();
   const { signinWithGoogle } = useFirebaseApp();
   const [login, setLogin] = useLocalStorage({
     key: "login",
@@ -21,7 +32,11 @@ const Login = () => {
   return (
     <>
       <Stack align={"center"} w={"90%"} m={"0 auto"} h={"100vh"}>
-        <Image mt={"30%"} w={210} src={logo} />
+        <Image
+          mt={"30%"}
+          src={colorScheme === "light" ? logoB : logoW}
+          w={100}
+        />
         <Box>
           <Title ta={"center"} order={2}>
             Accedi con Google
@@ -34,7 +49,7 @@ const Login = () => {
                 setError(false);
                 signinWithGoogle()
                   .then((e) => {
-                    if (e.user.uid !== "DKnCJH87brPpcZ1eakCLEtg5qOC2")
+                    if (e?.user.uid !== "DKnCJH87brPpcZ1eakCLEtg5qOC2")
                       return setError(true);
                     setLogin(e.user.uid);
                     navigate("/");

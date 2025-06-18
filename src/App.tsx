@@ -2,103 +2,142 @@ import "./App.css";
 import {
   ActionIcon,
   Box,
+  Button,
   Flex,
-  Group,
   Image,
+  LoadingOverlay,
   Paper,
-  Space,
-  Stack,
+  Text,
   Title,
+  useMantineColorScheme,
 } from "@mantine/core";
-import logo from "./assets/logo_compatto_bianco.svg";
+import flipStart from "./assets/flip_start.svg";
+import flipEnd from "./assets/flip_end.svg";
+import pattern from "./assets/pattern.svg";
 import { useEffect, useState } from "react";
-import List from "./components/list/list.tsx";
 import { useFirebaseApp } from "./common/provider/firebaseProvider.tsx";
-import { Listitem } from "./common/type/types";
+import { Listitem, Tabs } from "./common/type/types";
 import { IconDoorExit } from "@tabler/icons-react";
-import { useLocalStorage } from "@mantine/hooks";
+import { useDebouncedCallback, useLocalStorage } from "@mantine/hooks";
 import { getAuth, signOut } from "firebase/auth";
+import Selector from "./components/selector/selector.tsx";
 
 function App() {
-  const [tabSelected, setTabSelected] = useState<"magazzino" | "carrello">(
-    "magazzino",
-  );
+  const [tabSelected, setTabSelected] = useState<Tabs>("magazzino");
   const auth = getAuth();
   const [storage, setStorage] = useState<Listitem[]>([]);
+  const [isFetching, setIsFetching] = useState(false);
+  const setLoadingCallback = useDebouncedCallback(
+    (x: boolean) => setIsFetching(x),
+    500,
+  );
   const { getStorage, dbReady, lastUpdate } = useFirebaseApp();
-  const [_, setLogin] = useLocalStorage({
+  const [, setLogin] = useLocalStorage({
     key: "login",
     defaultValue: "",
   });
+  const { colorScheme } = useMantineColorScheme();
 
   useEffect(() => {
-    if (dbReady)
-      getStorage(tabSelected).then((doc) => {
-        setStorage(doc);
-      });
+    if (dbReady) {
+      setLoadingCallback(true);
+      getStorage(tabSelected)
+        .then((doc) => {
+          setStorage(doc);
+        })
+        .finally(() => setLoadingCallback(false));
+    }
   }, [dbReady, lastUpdate, tabSelected]);
 
   return (
-    <Box p={"10px 8px"} h={"100vh"} w={"100vw"}>
-      <Flex justify={"space-between"}>
-        <Image src={logo} w={100} />
+    <Flex
+      p={10}
+      style={{
+        overflow: "hidden",
+        background: `url(${pattern})`,
+        backgroundSize: "contain",
+      }}
+      direction={"column"}
+      h={"100dvh"}
+      w={"100dvw"}
+    >
+      <Flex justify={"end"}>
         <ActionIcon
           onClick={() => signOut(auth).then(() => setLogin(""))}
           variant={"transparent"}
-          color={"white"}
+          color={colorScheme === "light" ? "black" : "white"}
         >
           <IconDoorExit />
         </ActionIcon>
       </Flex>
-      <Title ml={10} mt={16} c={"white"}>
-        Gestionale
-      </Title>
-      <Title ml={10} order={5}>
-        Inserisci sotto tutte le provviste nel magazzino o aggiungi alla lista
-        della spesa ciò che scarseggia
-      </Title>
-      <Space h={30} />
-      <Stack gap={0}>
-        <Group gap={0}>
-          <Box
-            c={"white"}
-            fz={14}
-            fw={tabSelected === "magazzino" ? 700 : 500}
-            bg={"red.5"}
-            p={"6px 4px"}
-            style={{ borderTopLeftRadius: 4, borderTopRightRadius: 4 }}
-            onClick={() => setTabSelected("magazzino")}
-          >
-            Magazzino
-          </Box>
-          <Box
-            c={"white"}
-            fz={14}
-            fw={tabSelected === "carrello" ? 700 : 500}
-            bg={"blue.5"}
-            p={"6px 4px"}
-            style={{ borderTopLeftRadius: 4, borderTopRightRadius: 4 }}
-            onClick={() => setTabSelected("carrello")}
-          >
-            Lista della spesa
-          </Box>
-        </Group>
-        <Paper
-          style={{
-            borderBottomRightRadius: 4,
-            borderTopRightRadius: 4,
-            borderBottomLeftRadius: 4,
-          }}
-          radius={0}
-          fz={18}
-          c={"gray.9"}
-          p={"10px 6px"}
-          bg={tabSelected === "magazzino" ? "red.5" : "blue.5"}
+      <Flex m={"0 auto"} maw={550} pos={"relative"} mt={8}>
+        <Image src={flipStart} />
+        <Box flex={1} pr={2} mx={-2} bg={"#1D92E1"} h={96}>
+          <Title ta={"center"} c={"white"}>
+            Gestionale
+          </Title>
+          <Text ta={"center"} pos={"absolute"} left={34} right={34} c={"white"}>
+            Una sola piattaforma per gestire l'associazione
+          </Text>
+        </Box>
+        <Image src={flipEnd} />
+      </Flex>
+      <Flex my={12} justify={"space-evenly"} gap={0}>
+        <Button
+          variant={tabSelected === "magazzino" ? "filled" : "outline"}
+          radius={10}
+          miw={100}
+          fz={14}
+          fw={tabSelected === "magazzino" ? 700 : 500}
+          color={"#F9B838"}
+          p={"6px 4px"}
+          onClick={() => setTabSelected("magazzino")}
         >
-          <List list={storage} path={tabSelected} />
-        </Paper>
-      </Stack>
-    </Box>
+          Magazzino
+        </Button>
+        <Button
+          variant={tabSelected === "carrello" ? "filled" : "outline"}
+          radius={10}
+          fz={14}
+          miw={100}
+          fw={tabSelected === "carrello" ? 700 : 500}
+          color={"#F9B838"}
+          p={"6px 4px"}
+          onClick={() => setTabSelected("carrello")}
+        >
+          Lista della spesa
+        </Button>
+        <Button
+          variant={tabSelected === "incassi" ? "filled" : "outline"}
+          radius={10}
+          fz={14}
+          miw={100}
+          fw={tabSelected === "incassi" ? 700 : 500}
+          color={"#F9B838"}
+          p={"6px 4px"}
+          onClick={() => setTabSelected("incassi")}
+        >
+          Incassi
+        </Button>
+      </Flex>
+      <Paper
+        flex={1}
+        display={"flex"}
+        style={{ flexDirection: "column", overflowX: "hidden" }}
+        bg={"#0B2A55"}
+        radius={18}
+        fz={18}
+        c={"gray.9"}
+        p={12}
+        pos={"relative"}
+      >
+        <LoadingOverlay
+          transitionProps={{ transition: "fade" }}
+          visible={isFetching}
+        />
+        <Selector list={storage} tab={tabSelected} />
+      </Paper>
+    </Flex>
   );
 }
 

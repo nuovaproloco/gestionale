@@ -1,14 +1,40 @@
-import {createContext, ReactNode, useContext, useEffect, useState,} from "react";
-import {v4 as uuidv4} from "uuid";
-import {FireStoreDb} from "../const/firebaseapp.ts";
-import {collection, deleteDoc, doc, getDocs, setDoc, updateDoc,} from "firebase/firestore";
-import {Listitem} from "../type/types";
-import {useLocalStorage} from "@mantine/hooks";
-import {useNavigate} from "react-router-dom";
-import {getAuth, GoogleAuthProvider, signInWithPopup, UserCredential} from "firebase/auth";
+import {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
+import { v4 as uuidv4 } from "uuid";
+import { FireStoreDb } from "../const/firebaseapp.ts";
+import {
+  collection,
+  deleteDoc,
+  doc,
+  DocumentData,
+  getDocs,
+  QueryDocumentSnapshot,
+  setDoc,
+  updateDoc,
+} from "firebase/firestore";
+import { Listitem, Product } from "../type/types";
+import { useLocalStorage } from "@mantine/hooks";
+import { useNavigate } from "react-router-dom";
+import {
+  getAuth,
+  GoogleAuthProvider,
+  signInWithPopup,
+  UserCredential,
+} from "firebase/auth";
 
 interface DefaultValue {
   getStorage: (path?: string) => Promise<Listitem[]>;
+  getCashflow: () => Promise<{
+    [x: string]: QueryDocumentSnapshot<DocumentData, DocumentData>;
+  }>;
+  getCashflowData: (
+    x: QueryDocumentSnapshot<DocumentData, DocumentData>,
+  ) => Promise<Product[]>;
   addItemStorage: (x: Listitem, path?: string) => void;
   deleteStorageItem: (x: Listitem, path?: string) => void;
   updateStorageItem: (x: Listitem, path?: string) => void;
@@ -18,6 +44,8 @@ interface DefaultValue {
 }
 const FirebaseContext = createContext<DefaultValue>({
   getStorage: () => new Promise((resolve) => resolve([])),
+  getCashflow: () => new Promise((resolve) => resolve({})),
+  getCashflowData: () => new Promise((resolve) => resolve([])),
   addItemStorage: () => {},
   deleteStorageItem: () => {},
   updateStorageItem: () => {},
@@ -47,7 +75,30 @@ const FirebaseDbProvider = ({ children }: Props) => {
           return querySnapshot.docs.map((doc) => doc.data() as Listitem) ?? [];
         },
       );
-    else return []
+    else return [];
+  }
+  async function getCashflow() {
+    if (FireStoreDb) {
+      const response: {
+        [x: string]: QueryDocumentSnapshot<DocumentData, DocumentData>;
+      } = {};
+      await getDocs(collection(FireStoreDb, "venduto")).then(
+        (querySnapshot) => {
+          querySnapshot.docs.forEach((doc) => {
+            Object.assign(response, { [doc.id]: doc });
+            console.log(doc.id);
+          });
+        },
+      );
+      return response;
+    } else return {};
+  }
+  async function getCashflowData(
+    data: QueryDocumentSnapshot<DocumentData, DocumentData>,
+  ) {
+    return await getDocs(collection(data.ref, "prodotti")).then((docs) =>
+      docs.docs.map((product) => product.data() as Product),
+    );
   }
   async function addItem(item: Listitem, path?: string) {
     const uuid = uuidv4();
@@ -89,6 +140,8 @@ const FirebaseDbProvider = ({ children }: Props) => {
     <FirebaseContext.Provider
       value={{
         getStorage: getItems,
+        getCashflow,
+        getCashflowData,
         addItemStorage: addItem,
         deleteStorageItem: deleteItem,
         updateStorageItem: updateItem,

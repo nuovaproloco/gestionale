@@ -9,15 +9,19 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "predeploy" : "npm run build",
-    "deploy" : "gh-pages -d dist"
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist"
   },
   "dependencies": {
     "@mantine/charts": "^7.13.0",
     "@mantine/core": "^7.13.0",
     "@mantine/hooks": "^7.13.0",
     "@tabler/icons-react": "^3.19.0",
+    "@types/lodash": "^4.17.17",
+    "@types/luxon": "^3.6.2",
     "firebase": "^10.13.2",
+    "lodash": "^4.17.21",
+    "luxon": "^3.6.1",
     "prettier": "^3.3.3",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",

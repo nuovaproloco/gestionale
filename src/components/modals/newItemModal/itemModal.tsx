@@ -14,9 +14,9 @@ import { useState } from "react";
 import { useShallowEffect } from "@mantine/hooks";
 
 const ItemModal = (
-  props: ModalProps & {
+  props: Omit<ModalProps, 'defaultValue'> & {
     onConfirm: (x: Listitem) => void;
-    defaultValue?: Partial<Listitem>;
+    defaultValue?: Listitem;
   },
 ) => {
   const { onConfirm, defaultValue, ...others } = props;
@@ -48,7 +48,7 @@ const ItemModal = (
         />
         <NumberInput
           value={number}
-          onChange={(e) => setNumber(e)}
+          onChange={(e) => setNumber(+e)}
           label={"Quantità"}
           min={0}
         />
