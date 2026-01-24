@@ -62,6 +62,17 @@ const Login = () => {
               Accedi
             </Button>
           </Flex>
+          <Button
+            mt={8}
+            w={218}
+            variant={"outline"}
+            color={"red.9"}
+            onClick={() => {
+              navigate("/cinema");
+            }}
+          >
+            Dipendente Cinema
+          </Button>
           {error && (
             <Text mt={16} c={"red"}>
               Credenziali errate o account non autorizzato
