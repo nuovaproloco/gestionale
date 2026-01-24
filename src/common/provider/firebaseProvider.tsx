@@ -68,14 +68,14 @@ const FirebaseDbProvider = ({ children }: Props) => {
     return signInWithPopup(auth, authProvider);
   }
   async function getItems(path?: string) {
-    if (FireStoreDb)
+    if (FireStoreDb) {
       return await getDocs(collection(FireStoreDb, path ?? "magazzino")).then(
         (querySnapshot) => {
           setLastUpdate(new Date().toUTCString());
           return querySnapshot.docs.map((doc) => doc.data() as Listitem) ?? [];
         },
       );
-    else return [];
+    } else return [];
   }
   async function getCashflow() {
     if (FireStoreDb) {
@@ -95,9 +95,17 @@ const FirebaseDbProvider = ({ children }: Props) => {
   }
   async function getCashflowData(
     data: QueryDocumentSnapshot<DocumentData, DocumentData>,
-  ) {
-    return await getDocs(collection(data.ref, "prodotti")).then((docs) =>
-      docs.docs.map((product) => product.data() as Product),
+  ): Promise<Product[]> {
+    const collectionNames = data.data().collections as string[];
+
+    const allDocsPromises = collectionNames.map((collectionName) =>
+      getDocs(collection(data.ref, collectionName)),
+    );
+
+    const snapshots = await Promise.all(allDocsPromises);
+
+    return snapshots.flatMap((snapshot) =>
+      snapshot.docs.map((doc) => doc.data() as Product),
     );
   }
   async function addItem(item: Listitem, path?: string) {
