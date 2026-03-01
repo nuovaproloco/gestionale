@@ -1,23 +1,23 @@
 import {
   ActionIcon,
+  Box,
   Button,
   Group,
   Paper,
-  ScrollArea,
   Text,
   Title,
 } from "@mantine/core";
 import { IconCirclePlus, IconPencil, IconTrash } from "@tabler/icons-react";
-import { Listitem } from "../../common/type/types";
+import { Listitem, Tabs } from "../../../common/type/types";
 import { useDisclosure } from "@mantine/hooks";
 import { useState } from "react";
-import { useFirebaseApp } from "../../common/provider/firebaseProvider.tsx";
-import DeleteModal from "../modals/deleteModal/deleteModal.tsx";
-import ItemModal from "../modals/newItemModal/itemModal.tsx";
+import { useFirebaseApp } from "../../../common/provider/firebaseProvider.tsx";
+import DeleteModal from "../../modals/deleteModal/deleteModal.tsx";
+import ItemModal from "../../modals/newItemModal/itemModal.tsx";
 
 interface Props {
   list: Listitem[];
-  path: "magazzino" | "carrello";
+  path: Tabs;
 }
 const List = ({ list, path }: Props) => {
   const [
@@ -73,7 +73,7 @@ const List = ({ list, path }: Props) => {
         onClose={closeDeleteModal}
         elementToDelete={elementToDelete?.name ?? ""}
       />
-      <Paper px={6} bg={"white"}>
+      <Paper radius={8} py={8} px={6} bg={"white"}>
         <Group>
           <Title w={100} order={6}>
             Nome:
@@ -83,25 +83,27 @@ const List = ({ list, path }: Props) => {
           </Title>
         </Group>
       </Paper>
-      <Paper mt={8} bg={"white"}>
-        <ScrollArea.Autosize
-          styles={{ thumb: { backgroundColor: "gainsboro" } }}
-          scrollbars={"y"}
-          offsetScrollbars
-          mah={400}
-        >
-          {list.length === 0 && (
-            <Group px={8} pt={10} gap={8} wrap={"nowrap"}>
-              <IconCirclePlus
-                size={58}
-                stroke={1}
-                color={"var(--mantine-color-gray-7)"}
-              />
-              <Text c={"gray.7"} fw={600}>
-                Aggiungi un elemento premendo il tasto qui sotto
-              </Text>
-            </Group>
-          )}
+      <Paper
+        display={"flex"}
+        style={{ flexDirection: "column", overflow: "hidden" }}
+        flex={1}
+        radius={8}
+        mt={8}
+        bg={"white"}
+      >
+        {list.length === 0 && (
+          <Group px={8} pt={10} gap={8} wrap={"nowrap"}>
+            <IconCirclePlus
+              size={58}
+              stroke={1}
+              color={"var(--mantine-color-gray-7)"}
+            />
+            <Text c={"gray.7"} fw={600}>
+              Aggiungi un elemento premendo il tasto qui sotto
+            </Text>
+          </Group>
+        )}
+        <Box flex={1} style={{ overflow: "auto" }}>
           {list.map(({ name, unit = "", number, id }) => {
             return (
               <Group
@@ -141,7 +143,7 @@ const List = ({ list, path }: Props) => {
               </Group>
             );
           })}
-        </ScrollArea.Autosize>
+        </Box>
         <Group p={8} justify={"flex-end"}>
           <Button color={"blue"} onClick={() => openNewItemModal()}>
             Aggiungi
