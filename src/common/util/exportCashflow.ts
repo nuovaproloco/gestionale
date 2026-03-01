@@ -26,7 +26,7 @@ function parseFile(file: File): Promise<IncassoData[]> {
                 const dataStr = row[2]; // Data spettacolo
                 if (!dataStr || dataStr === 'Data spettacolo') continue;
 
-                const bigliettiFisici = parseInt(row[4] || '0') +parseInt(row[5] || '0'); // Numero Contanti + Numero Carte
+                const bigliettiFisici = parseInt(row[4] || '0') + parseInt(row[6] || '0'); // Numero Contanti + Numero Carte
                 const incassoContanti = parseFloat(row[5] || '0'); // Importo Contanti
                 const incassoPos = parseFloat(row[7] || '0'); // Importo Carte
                 const bigliettiOnline = parseInt(row[8] || '0'); // Numero Sito
